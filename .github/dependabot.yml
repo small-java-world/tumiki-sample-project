@@ -1,0 +1,78 @@
+version: 2
+
+updates:
+  # Frontend dependencies (npm)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "small-java-world"
+    assignees:
+      - "small-java-world"
+    commit-message:
+      prefix: "🔧"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "npm"
+
+  # Backend dependencies (bundler) - 将来実装予定
+  - package-ecosystem: "bundler"
+    directory: "/backend"
+    schedule:
+      interval: "weekly" 
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "small-java-world"
+    assignees:
+      - "small-java-world"
+    commit-message:
+      prefix: "💎"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "backend"
+      - "ruby"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00" 
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "small-java-world"
+    commit-message:
+      prefix: "🐳"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "small-java-world"
+    commit-message:
+      prefix: "🔄"
+    labels:
+      - "dependencies"
+      - "github-actions"

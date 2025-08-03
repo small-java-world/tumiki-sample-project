@@ -1,0 +1,219 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  # フロントエンド テスト
+  frontend-test:
+    name: 🔵 Frontend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Worktree対応: 履歴を取得してブランチ情報を完全にする
+          fetch-depth: 0
+        
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: 📦 Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: 🧪 Run tests
+        working-directory: ./frontend
+        run: npm test -- --coverage --watchAll=false
+        
+      - name: 🏗️ Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        
+      - name: 📊 Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./frontend/coverage/lcov.info
+          flags: frontend
+
+  # Docker Compose テスト
+  docker-test:
+    name: 🐳 Docker Compose Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+        
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: 🏗️ Build services
+        run: docker compose build --no-cache
+        
+      - name: 🚀 Start services
+        run: docker compose up -d
+        
+      - name: ⏳ Wait for services
+        run: |
+          echo "Waiting for services to be ready..."
+          timeout 300 bash -c 'until curl -f http://localhost:3001 &>/dev/null; do sleep 5; done'
+          timeout 300 bash -c 'until curl -f http://localhost:9003 &>/dev/null; do sleep 5; done'
+          
+      - name: 🧪 Test service connectivity
+        run: |
+          # Frontend test
+          curl -f http://localhost:3001 || exit 1
+          echo "✅ Frontend service is running"
+          
+          # MinIO test
+          curl -f http://localhost:9003 || exit 1
+          echo "✅ MinIO service is running"
+          
+          # MySQL test
+          docker compose exec -T db mysql -u myapp -pmyapp_pass -e "SELECT 1;" || exit 1
+          echo "✅ MySQL service is running"
+          
+          # Worktree compatibility check
+          if [ -f .git ] && grep -q "gitdir:" .git; then
+            echo "🌳 Worktree setup detected"
+            git worktree list || echo "⚠️  Not in worktree environment"
+          fi
+          
+      - name: 📋 Show service status
+        run: docker compose ps
+        
+      - name: 📜 Show logs on failure
+        if: failure()
+        run: docker compose logs
+        
+      - name: 🛑 Stop services
+        if: always()
+        run: docker compose down -v
+
+  # バックエンド テスト（将来実装予定）
+  backend-test:
+    name: 🔴 Backend Tests (Future)
+    runs-on: ubuntu-latest
+    if: false  # 現在は無効化
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 💎 Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+          working-directory: ./backend
+          
+      - name: 🗄️ Setup database
+        working-directory: ./backend
+        run: |
+          bundle exec rails db:setup
+          bundle exec rails db:migrate
+          
+      - name: 🧪 Run tests
+        working-directory: ./backend
+        run: bundle exec rspec
+
+  # セキュリティ & 品質チェック
+  security-check:
+    name: 🔒 Security & Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔍 Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: 📊 Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+      - name: 🟢 Setup Node.js for linting
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: 📦 Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: 🎨 Run ESLint
+        working-directory: ./frontend
+        run: npm run lint || echo "ESLint not configured yet"
+
+  # デプロイ（main ブランチのみ）
+  deploy:
+    name: 🚀 Deploy
+    runs-on: ubuntu-latest
+    needs: [frontend-test, docker-test, security-check]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🏗️ Build for production
+        run: |
+          echo "🏗️ Building production images..."
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+          
+      - name: 📦 Tag images
+        run: |
+          echo "📦 Tagging images for deployment..."
+          docker tag myapp-frontend:latest myapp-frontend:${{ github.sha }}
+          
+      - name: 🎉 Deployment ready
+        run: |
+          echo "🎉 Deployment ready!"
+          echo "Images tagged with SHA: ${{ github.sha }}"
+
+  # 通知
+  notify:
+    name: 📢 Notifications
+    runs-on: ubuntu-latest
+    needs: [frontend-test, docker-test, security-check]
+    if: always()
+    
+    steps:
+      - name: 📢 Notify success
+        if: needs.frontend-test.result == 'success' && needs.docker-test.result == 'success'
+        run: |
+          echo "✅ All tests passed!"
+          echo "Frontend: ${{ needs.frontend-test.result }}"
+          echo "Docker: ${{ needs.docker-test.result }}"
+          echo "Security: ${{ needs.security-check.result }}"
+          
+      - name: 📢 Notify failure
+        if: needs.frontend-test.result == 'failure' || needs.docker-test.result == 'failure'
+        run: |
+          echo "❌ Some tests failed!"
+          echo "Frontend: ${{ needs.frontend-test.result }}"
+          echo "Docker: ${{ needs.docker-test.result }}"
+          echo "Security: ${{ needs.security-check.result }}"

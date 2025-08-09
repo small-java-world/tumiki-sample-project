@@ -216,6 +216,16 @@ claude -p "/kairo-requirements 新機能"
 claude -p "/rev-design 設計レビュー"
 ```
 
+**Cursor CLI**（ターミナルからTsumikiを実行）
+```bash
+# インストール
+curl https://cursor.com/install -fsS | bash
+
+# 使い方（スラッシュコマンド）
+# 例: /tdd-red でRed作成
+# 詳細は README.cursor.md を参照
+```
+
 **手動でTsumikiコマンド参照**
 ```bash
 # コマンド一覧確認

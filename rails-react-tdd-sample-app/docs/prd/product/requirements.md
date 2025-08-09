@@ -1,5 +1,10 @@
 # PRD — 実現したい機能
 
+前提
+- Tsumikiのタスク分割（/kairo-*, /tdd-*）で単一ストリームに沿って進める
+- 機能ごとのPRDは `docs/prd/features/<feature>/` に配置し、次機能も同構成で拡張する
+- 初期の自動テスト（RSpec/Vitest）は常にGreenを維持する
+
 - システム健全性の可視化
   - 全体の状態（ok / degraded）を表示できる
   - 主要コンポーネント（db / storage / auth）の状態を表示できる

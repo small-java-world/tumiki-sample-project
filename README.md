@@ -1,11 +1,28 @@
-# Tumiki Sample Project 🚀
+# Tsumiki Sample Project 🚀
 
 **React + MySQL + MinIO** を使用した開発環境テンプレート + **Tsumiki AI開発支援**
 
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://mysql.com)
-[![Tsumiki](https://img.shields.io/badge/Tsumiki-AI%20Driven-green.svg)](https://github.com/small-java-world/tumiki-sample-project)
+[![Tsumiki](https://img.shields.io/badge/Tsumiki-AI%20Driven-green.svg)](https://github.com/small-java-world/tsumiki-sample-project)
+
+## 目次
+- [📋 プロジェクト概要](#-プロジェクト概要)
+- [🎯 特徴](#-特徴)
+- [🛠️ 技術スタック](#️-技術スタック)
+- [🚀 クイックスタート](#-クイックスタート)
+- [🔀 Git Worktree 並列開発 (概要)](#-git-worktree-並列開発-概要)
+- [📁 ディレクトリ構成](#-ディレクトリ構成)
+- [🤖 Tsumiki AI コマンド活用](#-tsumiki-ai-コマンド活用)
+- [🔧 開発コマンド](#-開発コマンド)
+- [🌐 railsとreactのtddの題材のサンプルアプリ（TDD対象の最小サービス）](#-railsとreactのtddの題材のサンプルアプリtdd対象の最小サービス)
+- [🐛 トラブルシューティング](#-トラブルシューティング)
+- [📝 開発ガイドライン](#-開発ガイドライン)
+- [🤝 コントリビューション](#-コントリビューション)
+- [📄 ライセンス](#-ライセンス)
+- [🔗 関連リンク](#-関連リンク)
+- [📈 開発ロードマップ](#-開発ロードマップ)
 
 ## 📋 プロジェクト概要
 
@@ -51,8 +68,8 @@
 ### 1. リポジトリクローン
 
 ```bash
-git clone https://github.com/small-java-world/tumiki-sample-project.git
-cd tumiki-sample-project
+git clone https://github.com/small-java-world/tsumiki-sample-project.git
+cd tsumiki-sample-project
 ```
 
 ### 2. 開発環境起動
@@ -108,21 +125,15 @@ code .
 ## 📁 ディレクトリ構成
 
 ```
-tumiki-sample-project/
+tsumiki-sample-project/
 ├── .claude/commands/          # ✅ Tsumiki AIコマンド集（21個）
 │   ├── kairo-*.md            # 要件→実装フロー
 │   ├── tdd-*.md              # テスト駆動開発
 │   └── rev-*.md              # レビュー系コマンド
-├── frontend/                  # ✅ React SPA（動作中）
-│   ├── package.json          # Node.js依存関係
-│   ├── src/                  # Reactソースコード
-│   │   ├── App.js            # メインコンポーネント
-│   │   └── index.js          # エントリーポイント
-│   └── public/               # 静的ファイル
-├── backend/                   # 🚧 Rails API（開発中）
-│   ├── Dockerfile            # Rails用Dockerファイル  
-│   ├── Gemfile               # Ruby依存関係
-│   └── config/               # Rails設定（部分実装）
+├── rails-react-tdd-sample-app/ # ✅ railsとreactのtddの題材のサンプルアプリ（TDD対象の最小サービス）
+│   ├── docker-compose.yml
+│   ├── frontend/
+│   └── backend/
 ├── docker-compose.yml         # ✅ サービス定義
 ├── .mcp.json                # Serena MCP 設定ファイル
 ├── .gitignore                # Git除外設定
@@ -327,36 +338,54 @@ docker compose exec minio mc --help
 # docker compose exec backend bundle exec rspec
 ```
 
-## 🌐 サービス詳細
+## 🌐 railsとreactのtddの題材のサンプルアプリ（TDD対象の最小サービス）
 
-### ✅ **Frontend（React SPA）**
-- **ポート**: 3001  
-- **URL**: http://localhost:3001
-- **技術**: React 18 + Create React App
-- **開発サーバー**: Node.js 18 Alpine
+このリポジトリでは、「railsとreactのtddの題材のサンプルアプリ」を `rails-react-tdd-sample-app/` ディレクトリに配置し、これを **Tsumiki** と **Claude Code** で TDD しながら拡張していきます。
 
-### ✅ **データベース（MySQL）**
-- **ポート**: 3306
-- **データベース**: `myapp_development`
-- **ユーザー**: `myapp` / `myapp_pass`  
-- **ボリューム**: `db-data`（永続化）
-- **接続**: `mysql -h localhost -P 3306 -u myapp -p`
+### 📦 対象ディレクトリ
+- **アプリ本体**: `rails-react-tdd-sample-app/`
+- **フロントエンド**: `rails-react-tdd-sample-app/frontend/`
+- **バックエンド（Rails予定）**: `rails-react-tdd-sample-app/backend/`
+- **コンポーズ**: `rails-react-tdd-sample-app/docker-compose.yml`
 
-### ✅ **ストレージ（MinIO）**
-- **API**: http://localhost:9000
-- **管理画面**: http://localhost:9003
-- **認証**: `minioadmin` / `minioadmin`
-- **バケット**: `myapp-bucket`
-- **ボリューム**: `minio-data`（永続化）
+### 🚀 起動（railsとreactのtddの題材のサンプルアプリ）
+```bash
+cd rails-react-tdd-sample-app
+docker compose up -d --build
+```
 
-### 🚧 **Backend（Rails API）** - 開発中
-- **予定ポート**: 3000
-- **状況**: 設定不完全によりサービス停止中
-- **次回実装**: Rails 7.0 + REST API
+起動後:
+- Frontend: http://localhost:3001
+- MySQL: localhost:3306（DB: `myapp_development`, ユーザー: `myapp` / `myapp_pass`）
+- MinIO Console: http://localhost:9003（`minioadmin`/`minioadmin`）
 
-### 🚧 **認証（AWS Cognito代替）** - 開発予定
-- **予定ポート**: 5000
-- **候補技術**: moto/Cognito または別認証システム
+### 🧪 TDD フロー（Tsumiki + Claude Code）
+作業ディレクトリは常に `rails-react-tdd-sample-app/` を前提とします。
+
+1) 失敗テストを作る（Red）
+```bash
+claude -p "/tdd-red サービス詳細の初期表示を検証する Vitest テストを追加してください"
+```
+
+2) 実装して通す（Green）
+```bash
+claude -p "/tdd-green 今の Red を最小実装で通してください"
+```
+
+3) リファクタ（Refactor）
+```bash
+claude -p "/tdd-refactor 重複の整理と命名改善を提案・適用してください"
+```
+
+必要に応じて要件の肉付けは次で行います。
+```bash
+claude -p "/tdd-requirements サービス詳細画面の要件を列挙し優先度順に整理してください"
+```
+
+### 📌 作業ルール
+- コード編集の対象は `rails-react-tdd-sample-app/frontend` と `rails-react-tdd-sample-app/backend`。
+- Docker コンテナの起動・停止も `rails-react-tdd-sample-app/` 直下の Compose を使用。
+- 「railsとreactのtddの題材のサンプルアプリ」の詳細は `rails-react-tdd-sample-app/README.md` を参照。
 
 ## 🐛 トラブルシューティング
 
@@ -428,7 +457,7 @@ git push origin feature/新機能名
 - **Rails**: RuboCop準拠
 - **React**: ESLint + Prettier
 - **コミット**: Conventional Commits
-- **テスト**: RSpec（Backend）+ Jest（Frontend）
+- **テスト**: RSpec（Backend）+ Vitest（Frontend）
 
 ## 🤝 コントリビューション
 
@@ -443,7 +472,7 @@ git push origin feature/新機能名
 
 ## 🔗 関連リンク
 
-- **GitHub**: https://github.com/small-java-world/tumiki-sample-project
+- **GitHub**: https://github.com/small-java-world/tsumiki-sample-project
 - **Rails Guide**: https://guides.rubyonrails.org/
 - **React Docs**: https://react.dev/
 - **Docker Docs**: https://docs.docker.com/
@@ -460,7 +489,7 @@ git push origin feature/新機能名
 - [x] React フロントエンド構成
 - [x] MySQL + MinIO ストレージ設定  
 - [x] Tsumikiコマンド統合（21種類）
-- [x] GitHub連携
+- [x] GitHub連！
 - [x] AI開発ツール環境（Claude Code CLI）
 - [x] **CI/CD パイプライン（GitHub Actions）**
 - [x] **Dependabot自動更新・自動マージ**
@@ -495,6 +524,7 @@ git push origin feature/新機能名
 - **CI/CD**: エンタープライズレベル自動化
 - **AI開発**: Tsumiki + Claude Code CLI統合
 - **品質管理**: 自動テスト・セキュリティスキャン
+
 - **並行開発**: Git Worktree環境
 - **本番対応**: デプロイ・監視・セキュリティ
 

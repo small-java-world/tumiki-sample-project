@@ -5,7 +5,7 @@ Rails + React のTDD題材サンプルアプリ（最小構成）。Docker Compo
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange.svg)](https://mysql.com)
-[![Tsumiki](https://img.shields.io/badge/Tsumiki-AI%20Driven-green.svg)](https://github.com/small-java-world/tumiki-sample-project)
+[![Tsumiki](https://img.shields.io/badge/Tsumiki-AI%20Driven-green.svg)](https://github.com/small-java-world/tsumiki-sample-project)
 
 ## 🌐 railsとreactのtddの題材のサンプルアプリ（TDD対象の最小サービス）
 
@@ -98,8 +98,8 @@ claude -p "/tdd-requirements railsとreactのtddの題材のサンプルアプ�
 ### 1. リポジトリクローン
 
 ```bash
-git clone https://github.com/small-java-world/tumiki-sample-project.git
-cd tumiki-sample-project
+git clone https://github.com/small-java-world/tsumiki-sample-project.git
+cd tsumiki-sample-project
 ```
 
 ### 2. 開発環境起動
@@ -487,7 +487,7 @@ git push origin feature/新機能名
 
 ## 🔗 関連リンク
 
-- **GitHub**: https://github.com/small-java-world/tumiki-sample-project
+- **GitHub**: https://github.com/small-java-world/tsumiki-sample-project
 - **Rails Guide**: https://guides.rubyonrails.org/
 - **React Docs**: https://react.dev/
 - **Docker Docs**: https://docs.docker.com/

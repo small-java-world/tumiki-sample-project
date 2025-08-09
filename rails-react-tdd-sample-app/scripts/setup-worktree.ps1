@@ -9,7 +9,7 @@ function Write-ColorOutput {
 }
 
 if ($Help) {
-    Write-ColorOutput "🌳 Git Worktree Setup for Tumiki Sample Project" "Cyan"
+    Write-ColorOutput "🌳 Git Worktree Setup for Tsumiki Sample Project" "Cyan"
     Write-Host "=============================================="
     Write-Host "This script creates a bare repository and sets up worktrees for parallel development."
     Write-Host ""

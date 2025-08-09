@@ -360,7 +360,7 @@ Claude Code で `/kairo-requirements` を実行し、Todo アプリの要件定�
 
 以上の Markdown をそのまま `setup_tasks.md` として保存し、プロジェクト README とは別に **AI ドリブン開発用の手引き** として扱ってください。
 
-   cd D:\tumiki\sample\myapp
+   cd D:\tsumiki\sample\myapp
  docker compose build backend
  docker compose up --build
 

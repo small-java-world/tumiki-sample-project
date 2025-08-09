@@ -13,7 +13,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🌳 Git Worktree Setup for Tumiki Sample Project${NC}"
+echo -e "${BLUE}🌳 Git Worktree Setup for Tsumiki Sample Project${NC}"
 echo "=============================================="
 
 # Check if git is installed

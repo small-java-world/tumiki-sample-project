@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    build: ./rails-react-tdd-sample-app/backend
     ports:
       - "3000:3000"
     depends_on:
@@ -10,7 +10,7 @@ services:
       - minio
       - cognito
     volumes:
-      - ./backend:/app
+      - ./rails-react-tdd-sample-app/backend:/app
     environment:
       - RAILS_ENV=development
 
@@ -21,7 +21,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend:/app
+      - ./rails-react-tdd-sample-app/frontend:/app
     working_dir: /app
     command: sh -c "npm install && npm start"
 

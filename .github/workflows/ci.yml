@@ -17,29 +17,30 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📥 Checkout code
+      - name: 📥 Checkout code (with submodules)
         uses: actions/checkout@v4
         with:
           # Worktree対応: 履歴を取得してブランチ情報を完全にする
           fetch-depth: 0
+          submodules: recursive
         
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: rails-react-tdd-sample-app/frontend/package-lock.json
           
       - name: 📦 Install dependencies
-        working-directory: ./frontend
+        working-directory: ./rails-react-tdd-sample-app/frontend
         run: npm ci
         
       - name: 🧪 Run tests
-        working-directory: ./frontend
+        working-directory: ./rails-react-tdd-sample-app/frontend
         run: npm test -- --coverage --watchAll=false
         
       - name: 🏗️ Build frontend
-        working-directory: ./frontend
+        working-directory: ./rails-react-tdd-sample-app/frontend
         run: npm run build
         
       - name: 📊 Upload coverage reports
@@ -54,18 +55,21 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📥 Checkout code
+      - name: 📥 Checkout code (with submodules)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: recursive
         
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         
       - name: 🏗️ Build services
+        working-directory: ./rails-react-tdd-sample-app
         run: docker compose build --no-cache
         
       - name: 🚀 Start services
+        working-directory: ./rails-react-tdd-sample-app
         run: docker compose up -d
         
       - name: ⏳ Wait for services
@@ -75,6 +79,7 @@ jobs:
           timeout 300 bash -c 'until curl -f http://localhost:9003 &>/dev/null; do sleep 5; done'
           
       - name: 🧪 Test service connectivity
+        working-directory: ./rails-react-tdd-sample-app
         run: |
           # Frontend test
           curl -f http://localhost:3001 || exit 1
@@ -95,14 +100,17 @@ jobs:
           fi
           
       - name: 📋 Show service status
+        working-directory: ./rails-react-tdd-sample-app
         run: docker compose ps
         
       - name: 📜 Show logs on failure
         if: failure()
+        working-directory: ./rails-react-tdd-sample-app
         run: docker compose logs
         
       - name: 🛑 Stop services
         if: always()
+        working-directory: ./rails-react-tdd-sample-app
         run: docker compose down -v
 
   # バックエンド テスト（将来実装予定）
@@ -138,8 +146,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📥 Checkout code
+      - name: 📥 Checkout code (with submodules)
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
         
       - name: 🔍 Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -161,11 +171,11 @@ jobs:
           node-version: '18'
           
       - name: 📦 Install frontend dependencies
-        working-directory: ./frontend
+        working-directory: ./rails-react-tdd-sample-app/frontend
         run: npm ci
         
       - name: 🎨 Run ESLint
-        working-directory: ./frontend
+        working-directory: ./rails-react-tdd-sample-app/frontend
         run: npm run lint || echo "ESLint not configured yet"
 
   # デプロイ（main ブランチのみ）
@@ -176,10 +186,13 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
-      - name: 📥 Checkout code
+      - name: 📥 Checkout code (with submodules)
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
         
       - name: 🏗️ Build for production
+        working-directory: ./rails-react-tdd-sample-app
         run: |
           echo "🏗️ Building production images..."
           docker compose -f docker-compose.yml -f docker-compose.prod.yml build

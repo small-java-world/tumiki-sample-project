@@ -65,11 +65,14 @@
 - **Git** インストール済み  
 - **VS Code** (推奨)
 
-### 1. リポジトリクローン
+### 1. リポジトリクローン（サブモジュール込み）
 
 ```bash
-git clone https://github.com/small-java-world/tsumiki-sample-project.git
+git clone --recurse-submodules https://github.com/small-java-world/tsumiki-sample-project.git
 cd tsumiki-sample-project
+# 既存クローンの場合
+git submodule sync --recursive
+git submodule update --init --recursive
 ```
 
 ### 2. 開発環境起動
@@ -92,7 +95,7 @@ claude mcp add serena -s project -- uvx --from git+https://github.com/oraios/ser
   serena start-mcp-server --context ide-assistant --project $(pwd)
 ```
 
-### 4. サービス確認
+### 4. サービス確認（サブモジュール配下の Compose を使用）
 
 | サービス | URL | ステータス | 説明 |
 |---------|-----|-----------|------|
@@ -122,7 +125,7 @@ code .
 
 ---
 
-## 📁 ディレクトリ構成
+## 📁 ディレクトリ構成（サブモジュール）
 
 ```
 tsumiki-sample-project/
@@ -130,7 +133,7 @@ tsumiki-sample-project/
 │   ├── kairo-*.md            # 要件→実装フロー
 │   ├── tdd-*.md              # テスト駆動開発
 │   └── rev-*.md              # レビュー系コマンド
-├── rails-react-tdd-sample-app/ # ✅ railsとreactのtddの題材のサンプルアプリ（TDD対象の最小サービス）
+├── rails-react-tdd-sample-app/ # ✅ サブモジュール: railsとreactのtddの題材のサンプルアプリ
 │   ├── docker-compose.yml
 │   ├── frontend/
 │   └── backend/
@@ -358,7 +361,7 @@ docker compose exec minio mc --help
 - **バックエンド（Rails予定）**: `rails-react-tdd-sample-app/backend/`
 - **コンポーズ**: `rails-react-tdd-sample-app/docker-compose.yml`
 
-### 🚀 起動（railsとreactのtddの題材のサンプルアプリ）
+### 🚀 起動（rails-react-tdd-sample-app サブモジュール内）
 ```bash
 cd rails-react-tdd-sample-app
 docker compose up -d --build

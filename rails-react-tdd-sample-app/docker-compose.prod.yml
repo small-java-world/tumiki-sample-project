@@ -1,0 +1,62 @@
+version: '3.8'
+
+# 本番環境用のDocker Compose設定
+# 使用方法: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_BASE_URL=${API_BASE_URL:-http://localhost:3000}
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_DOMAIN:-localhost}`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  backend:
+    environment:
+      - RAILS_ENV=production
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`${API_DOMAIN:-api.localhost}`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
+
+  db:
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-myapp_production}
+      - MYSQL_USER=${MYSQL_USER:-myapp}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - prod_db_data:/var/lib/mysql
+
+  minio:
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - prod_minio_data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`${MINIO_DOMAIN:-minio.localhost}`)"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+
+volumes:
+  prod_db_data:
+    driver: local
+  prod_minio_data:
+    driver: local
+
+networks:
+  default:
+    name: myapp_prod_network

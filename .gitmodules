@@ -1,4 +1,4 @@
 [submodule "rails-react-tdd-sample-app"]
 	path = rails-react-tdd-sample-app
 	url = https://github.com/small-java-world/rails-react-tdd-sample-app.git
-	branch = feature/user-preferences
+	branch = main
